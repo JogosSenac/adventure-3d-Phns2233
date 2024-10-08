@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Chao
+  - chave
+  - bau
+  - porta
   layers:
   - Default
   - TransparentFX
