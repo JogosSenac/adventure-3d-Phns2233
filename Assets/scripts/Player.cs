@@ -18,6 +18,8 @@ public class Player : MonoBehaviour
     private Vector3 angeleRotation;
     [SerializeField] private bool pegando;
     [SerializeField] private bool podePegar;
+    //inventario
+    [SerializeField] private List<GameObject> inventario = new List<GameObject>();
     // Start is called before the first frame update
     void Start()
     {
@@ -105,14 +107,11 @@ public class Player : MonoBehaviour
         {
             animator.SetBool("correndo", true);
             Walk(3);
-
         }
         else
         {
             animator.SetBool("correndo", false);
         }
-
-
     }
 
     private void Walk(float velo = 1)
@@ -126,7 +125,6 @@ public class Player : MonoBehaviour
         Vector3 moveDirection = transform.forward * fowardInput;
         Vector3 moveForward = rb.position + moveDirection * velo * Time.deltaTime;
         rb.MovePosition(moveForward);
-
     }
 
     private void Jump()
@@ -164,24 +162,58 @@ public class Player : MonoBehaviour
 
         if (other.gameObject.CompareTag("chave") && pegando)
         {
-            temChave = true;
+            inventario.Add(Instantiate(other.gameObject.GetComponent<Chave>().CopiaDoObjeto()));
+            int numero = other.gameObject.GetComponent<Chave>().PegarNumeroChave();
+            Debug.LogFormat($"chave numero: {numero} inserida no inventario");
             Destroy(other.gameObject);
+            podePegar = false;
+            pegando = false;
         }
         if (other.gameObject.CompareTag("porta") && pegando && temChave)
         {
             other.gameObject.GetComponent<Animator>().SetTrigger("abrindo");
             temChave = false;
         }
-        if (other.gameObject.CompareTag("bau") && pegando && temChave)
+
+        if (other.gameObject.CompareTag("bau") && pegando)
         {
-            other.gameObject.GetComponent<Animator>().SetTrigger("temChave");
-            ouro = other.gameObject.GetComponent<Bau>().PegarOuro();
-            temChave = false;
+            if (VerificaChave(other.gameObject.GetComponent<Bau>().PegarNumeroFechadura()))
+            {
+                other.gameObject.GetComponent<Animator>().SetTrigger("temChave");
+            }
+
+            else
+            {
+                Debug.Log("você não tem a chave");
+            }
         }
-        pegando = false;
     }
-    private void OnTriggerEntre(Collider other)
+
+    private bool VerificaChave(int chave)
     {
-        pegando = false;
+        foreach (GameObject item in inventario)
+        {
+            if (item.gameObject.CompareTag("chave"))
+            {
+                if (item.gameObject.GetComponent<Chave>().PegarNumeroChave() == chave)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void PegarConteudoBau(GameObject bau)
+    {
+        Bau bauTesouro = bau.GetComponent<Bau>();
+        ouro = bauTesouro.PegarOuro();
+        if (bauTesouro.AcesarConteudoBau() != null)
+        {
+            foreach (GameObject item in bauTesouro.AcesarConteudoBau())
+            {
+                inventario.Add(item);
+            }
+        }
     }
 }

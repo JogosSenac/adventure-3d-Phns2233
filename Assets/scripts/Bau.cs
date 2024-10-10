@@ -12,20 +12,20 @@ public class Bau : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-       if(ehMagico)
-       {
-        particula.SetActive(true);
-        ouro = Random.Range(100, 400);
-       } 
-       else
-       {
-        particula.SetActive(false);
-        ouro = Random.Range(10,100);
-       }
+        if (ehMagico)
+        {
+            particula.SetActive(true);
+            ouro = Random.Range(100, 400);
+        }
+        else
+        {
+            particula.SetActive(false);
+            ouro = Random.Range(10, 100);
+        }
     }
     private void DesativarParticula()
     {
-       // particula.SetActive(false);
+        // particula.SetActive(false);
         particula.GetComponent<ParticleSystem>().Stop();
     }
     public int PegarOuro()
@@ -40,5 +40,19 @@ public class Bau : MonoBehaviour
         yield return new WaitForSeconds(2.5f);
         ouro = 0;
     }
- 
+
+    public int PegarNumeroFechadura()
+    {
+        return numeroChave;
+    }
+
+    public List<GameObject> AcesarConteudoBau()
+    {
+        return itens;
+    }
+
+    public void RemoverConteudoBau()
+    {
+        itens.Clear();
+    }
 }
